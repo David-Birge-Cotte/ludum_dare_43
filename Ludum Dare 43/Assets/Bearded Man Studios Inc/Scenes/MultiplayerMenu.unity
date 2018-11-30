@@ -1281,7 +1281,7 @@ MonoBehaviour:
   DontChangeSceneOnConnect: 0
   masterServerHost: 
   masterServerPort: 15940
-  natServerHost: 78.211.252.107
+  natServerHost: 
   natServerPort: 15941
   connectUsingMatchmaking: 0
   useElo: 0
