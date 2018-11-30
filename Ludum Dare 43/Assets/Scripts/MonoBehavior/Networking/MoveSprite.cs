@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using BeardedManStudios.Forge.Networking.Generated;
 
@@ -7,7 +8,10 @@ public class MoveSprite : MovingSpriteBehavior
 {
 	private void Update () 
 	{
-		if (!networkObject.IsServer)
+		if(networkObject == null)
+			return;
+
+		if (!networkObject.IsOwner)
 		{
 			transform.position = networkObject.Position;
 			return;
