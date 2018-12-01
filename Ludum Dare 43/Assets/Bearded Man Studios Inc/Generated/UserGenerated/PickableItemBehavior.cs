@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"Vector2\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"direction\"]]")]
+	[GeneratedRPC("{\"types\":[[\"uint\", \"Vector2\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"id\", \"dir\"]]")]
 	public abstract partial class PickableItemBehavior : NetworkBehavior
 	{
 		public const byte RPC_PUSH = 0 + 5;
@@ -22,7 +22,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
-			networkObject.RegisterRpc("Push", Push, typeof(Vector2));
+			networkObject.RegisterRpc("Push", Push, typeof(uint), typeof(Vector2));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -101,7 +101,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		/// <summary>
 		/// Arguments:
-		/// Vector2 direction
+		/// uint id
+		/// Vector2 dir
 		/// </summary>
 		public abstract void Push(RpcArgs args);
 

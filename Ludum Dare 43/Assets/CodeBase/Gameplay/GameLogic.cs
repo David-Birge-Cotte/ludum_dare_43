@@ -20,16 +20,20 @@ public class GameLogic : GameLogicBehavior
 		Instance = this;
 
         var player = NetworkManager.Instance.InstantiatePlayerGoat(position:StartPos);
-		PlayerTransform = player.transform;
+		//PlayerTransform = player.transform;
+
+		//BMSLogger.DebugLog("Player " + player.networkObject.NetworkId + " joined the game");
 	}
 
 	protected override void NetworkStart()
 	{
 		base.NetworkStart();
+		BMSLogger.DebugLog("Network Start");
 
-		if(!networkObject.IsServer)
+		if (!networkObject.IsServer)
 			return;
 
+		BMSLogger.DebugLog("Spawning items");
 		for (int i = 0; i < 5; i++)
 		{
 			var item = NetworkManager.Instance.InstantiatePickableItem(

@@ -10,6 +10,8 @@ public class PlayerGoat : PlayerGoatBehavior
 {
 	// ------------------------------------------------------------------------
 	// Variables
+	public uint PlayerID = 0;
+	public int Score = 0;
 	public float speed = 5.0f;
 	public string Name;
 	private Rigidbody2D rb2d;
@@ -22,13 +24,15 @@ public class PlayerGoat : PlayerGoatBehavior
 		// The server will destroy the network object when the owner disconnects
         if (networkObject.IsServer)
             networkObject.Owner.disconnected += delegate { DestroyPlayer(); };
-	
+
+		rb2d = GetComponent<Rigidbody2D>();
 		if (!networkObject.IsOwner)
 		{
-			Destroy(GetComponent<Rigidbody2D>());
+			//rb2d.simulated = false;
 			return;
 		}
-		rb2d = GetComponent<Rigidbody2D>();
+
+		BMSLogger.DebugLog("START OF PLAYER");
 
 		// Ask the server to call a function on all clients 
 		// Buffered means the server will even call it on new players when connecting
@@ -45,6 +49,7 @@ public class PlayerGoat : PlayerGoatBehavior
         if (!networkObject.IsOwner)
         {
             transform.position = networkObject.position;
+			//Score = networkObject.score; //dont update the score since its "SacrificeZone's job
             return;
         }
 
@@ -53,6 +58,7 @@ public class PlayerGoat : PlayerGoatBehavior
 
 		// Update the network object
         networkObject.position = transform.position;
+		networkObject.score = Score;
     }
 
 	private void Move()
@@ -63,14 +69,16 @@ public class PlayerGoat : PlayerGoatBehavior
 		);
 
 		dir *= Time.deltaTime * speed;
-		networkObject.direction = (Vector2)dir;
 		rb2d.MovePosition(transform.position + dir);
 	}
 
 	private void Push(PickableItem item)
 	{
 		Vector2 dir = (item.transform.position - transform.position).normalized * 3;
-		item.networkObject.SendRpc(PickableItem.RPC_PUSH, Receivers.Owner, dir);
+
+		object[] rpcParams = new object[2] {(object)PlayerID, (object)dir};
+
+		item.networkObject.SendRpc(PickableItem.RPC_PUSH, Receivers.Owner, rpcParams);
 	}
 
 	// Clean network destroy

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace BeardedManStudios.Forge.Networking.Generated
 {
 	[GeneratedRPC("{\"types\":[[\"string\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"newName\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"name\"]]")]
 	public abstract partial class PlayerGoatBehavior : NetworkBehavior
 	{
 		public const byte RPC_CHANGE_NAME = 0 + 5;
@@ -101,7 +101,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		/// <summary>
 		/// Arguments:
-		/// string newName
+		/// string name
 		/// </summary>
 		public abstract void ChangeName(RpcArgs args);
 

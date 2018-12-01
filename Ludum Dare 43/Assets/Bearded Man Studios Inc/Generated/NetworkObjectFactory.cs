@@ -23,9 +23,25 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				switch (identity)
 				{
+					case ChatManagerNetworkObject.IDENTITY:
+						availableCallback = true;
+						obj = new ChatManagerNetworkObject(networker, id, frame);
+						break;
+					case CubeForgeGameNetworkObject.IDENTITY:
+						availableCallback = true;
+						obj = new CubeForgeGameNetworkObject(networker, id, frame);
+						break;
+					case ExampleProximityPlayerNetworkObject.IDENTITY:
+						availableCallback = true;
+						obj = new ExampleProximityPlayerNetworkObject(networker, id, frame);
+						break;
 					case GameLogicNetworkObject.IDENTITY:
 						availableCallback = true;
 						obj = new GameLogicNetworkObject(networker, id, frame);
+						break;
+					case NetworkCameraNetworkObject.IDENTITY:
+						availableCallback = true;
+						obj = new NetworkCameraNetworkObject(networker, id, frame);
 						break;
 					case PickableItemNetworkObject.IDENTITY:
 						availableCallback = true;
@@ -34,6 +50,14 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					case PlayerGoatNetworkObject.IDENTITY:
 						availableCallback = true;
 						obj = new PlayerGoatNetworkObject(networker, id, frame);
+						break;
+					case TestNetworkObject.IDENTITY:
+						availableCallback = true;
+						obj = new TestNetworkObject(networker, id, frame);
+						break;
+					case SacrificeZoneNetworkObject.IDENTITY:
+						availableCallback = true;
+						obj = new SacrificeZoneNetworkObject(networker, id, frame);
 						break;
 				}
 

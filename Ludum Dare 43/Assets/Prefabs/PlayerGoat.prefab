@@ -128,9 +128,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 249aa755a3ac84b1993aeb6efa7469d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerID: 42
+  Score: 0
   speed: 5
   Name: 
-  AccessibleItem: {fileID: 0}
 --- !u!212 &212928695818124936
 SpriteRenderer:
   m_ObjectHideFlags: 1

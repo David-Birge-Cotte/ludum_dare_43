@@ -5,6 +5,7 @@ using UnityEngine;
 public class CameraLogic : MonoBehaviour 
 {
 	public Transform PlayerTransform = null;
+	public float speed = 4;
 
 	void Start () 
 	{
@@ -12,14 +13,14 @@ public class CameraLogic : MonoBehaviour
 		PlayerTransform = GameLogic.Instance.PlayerTransform;
 	}
 	
-	void Update () 
+	void FixedUpdate () 
 	{
 		if(PlayerTransform == null)
 			return;
 
-		transform.position = new Vector3(
-			PlayerTransform.position.x, 
-			PlayerTransform.position.y, 
-			transform.position.z);
+		transform.position = Vector3.Lerp(
+			transform.position, 
+			new Vector3(PlayerTransform.position.x, PlayerTransform.position.y, transform.position.z), 
+			Time.deltaTime * speed);
 	}
 }

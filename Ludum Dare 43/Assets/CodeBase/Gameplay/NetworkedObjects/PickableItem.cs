@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class PickableItem : PickableItemBehavior 
 {
-
+	public uint lastPlayerIDTouched = 0;
 	protected override void NetworkStart()
 	{
 		base.NetworkStart();
@@ -28,11 +28,11 @@ public class PickableItem : PickableItemBehavior
 
 	public override void Push(RpcArgs args)
 	{
-		//if (!networkObject.IsOwner)
-			//return;
-
 		Debug.Log("PUSH RPC");
+
+		lastPlayerIDTouched = args.GetNext<uint>();
 		Vector2 dir = args.GetNext<Vector2>();
+
 		StartCoroutine(Move((Vector2)transform.position + dir));
 	}
 
