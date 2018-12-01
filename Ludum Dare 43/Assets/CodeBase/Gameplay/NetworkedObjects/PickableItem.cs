@@ -39,8 +39,8 @@ public class PickableItem : PickableItemBehavior
 
 	public override void Push(RpcArgs args)
 	{
-		if (!networkObject.IsOwner)
-			return;
+		//if (!networkObject.IsOwner)
+			//return;
 
 		Debug.Log("PUSH RPC");
 		Vector2 dir = args.GetNext<Vector2>();
@@ -52,7 +52,7 @@ public class PickableItem : PickableItemBehavior
 		float t = 0;
 		while (t < 1)
 		{
-			rb2d.MovePosition(Vector2.Lerp(transform.position, newPos, t));
+			transform.position = Vector2.Lerp(transform.position, newPos, t);
 			t += Time.deltaTime;
 			yield return new WaitForEndOfFrame();
 		}
