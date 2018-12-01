@@ -27,6 +27,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 						availableCallback = true;
 						obj = new GameLogicNetworkObject(networker, id, frame);
 						break;
+					case PickableItemNetworkObject.IDENTITY:
+						availableCallback = true;
+						obj = new PickableItemNetworkObject(networker, id, frame);
+						break;
 					case PlayerGoatNetworkObject.IDENTITY:
 						availableCallback = true;
 						obj = new PlayerGoatNetworkObject(networker, id, frame);

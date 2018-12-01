@@ -5,10 +5,12 @@ using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerGoat : PlayerGoatBehavior 
 {
 	public float speed = 5.0f;
 	public string Name;
+	private Rigidbody2D rb2d;
 
 	protected override void NetworkStart()
 	{
@@ -17,11 +19,18 @@ public class PlayerGoat : PlayerGoatBehavior
 		// The server will destroy the network object when the owner disconnects
         if (networkObject.IsServer)
             networkObject.Owner.disconnected += delegate { DestroyPlayer(); };
-		
+
+		// If we are not the owning client, no need to simulate physics
+		if (!networkObject.IsOwner)
+		{
+			Destroy(GetComponent<Rigidbody>());
+			return;
+		}
+
 		// Ask the server to call a function on all clients 
 		// Buffered means the server will even call it on new players when connecting
-		if (networkObject.IsOwner)
-			networkObject.SendRpc(RPC_CHANGE_NAME, Receivers.AllBuffered, Name);
+		networkObject.SendRpc(RPC_CHANGE_NAME, Receivers.AllBuffered, Name);
+		rb2d = GetComponent<Rigidbody2D>();
 	}
 
 	private void Update()
@@ -50,8 +59,9 @@ public class PlayerGoat : PlayerGoatBehavior
 			Input.GetAxis("Horizontal"),
 			Input.GetAxis("Vertical")
 		);
+
 		dir *= Time.deltaTime * speed;
-		transform.position += dir;
+		rb2d.MovePosition(transform.position + dir);
 	}
 
 	// Clean network destroy
