@@ -13,8 +13,6 @@ public class PlayerGoat : PlayerGoatBehavior
 	public float speed = 5.0f;
 	public string Name;
 	private Rigidbody2D rb2d;
-
-	public PickableItem AccessibleItem = null;
 	// ------------------------------------------------------------------------
 
 	protected override void NetworkStart()
@@ -52,7 +50,6 @@ public class PlayerGoat : PlayerGoatBehavior
 
 		// Do some gameplay
 		Move();
-		Push();
 
 		// Update the network object
         networkObject.position = transform.position;
@@ -70,14 +67,10 @@ public class PlayerGoat : PlayerGoatBehavior
 		rb2d.MovePosition(transform.position + dir);
 	}
 
-	private void Push()
+	private void Push(PickableItem item)
 	{
-		if (AccessibleItem != null && Input.GetKeyDown(KeyCode.Space))
-		{
-			Debug.Log("Push on client");
-			Vector2 dir = (AccessibleItem.transform.position - transform.position).normalized;
-			AccessibleItem.networkObject.SendRpc(PickableItem.RPC_PUSH, Receivers.All, dir);
-		}
+		Vector2 dir = (item.transform.position - transform.position).normalized * 3;
+		item.networkObject.SendRpc(PickableItem.RPC_PUSH, Receivers.Owner, dir);
 	}
 
 	// Clean network destroy
@@ -93,23 +86,14 @@ public class PlayerGoat : PlayerGoatBehavior
 	}
 
 	// ------------------------------------------------------------------------
-	// TRIGGERS
-	private void OnTriggerEnter2D(Collider2D other)
+	private void OnCollisionEnter2D(Collision2D other)
 	{
 		if (!networkObject.IsOwner)
 			return;
-
-		if (other.GetComponent<PickableItem>())
-			AccessibleItem = other.GetComponent<PickableItem>();
-	}
-
-	private void OnTriggerExit2D(Collider2D other)
-	{
-		if(!networkObject.IsOwner)
-			return;
-
-		if(other.GetComponent<PickableItem>() == AccessibleItem)
-			AccessibleItem = null;
+		
+		PickableItem item = other.transform.GetComponent<PickableItem>();
+		if (item != null)
+			Push(item);
 	}
 	// ------------------------------------------------------------------------
 }

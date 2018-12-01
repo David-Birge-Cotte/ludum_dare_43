@@ -5,20 +5,12 @@ using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
 public class PickableItem : PickableItemBehavior 
 {
-	private Rigidbody2D rb2d;
 
 	protected override void NetworkStart()
 	{
 		base.NetworkStart();
-		if(!networkObject.IsOwner)
-		{
-			Destroy(GetComponent<Rigidbody2D>());
-			return;
-		}
-		rb2d = GetComponent<Rigidbody2D>();
 	}
 
 	void Update () 
@@ -28,12 +20,9 @@ public class PickableItem : PickableItemBehavior
 
         if (!networkObject.IsOwner)
         {
-			rb2d.velocity = networkObject.velocity;
             transform.position = networkObject.position;
             return;
         }
-
-		networkObject.velocity = rb2d.velocity;
         networkObject.position = transform.position;
 	}
 

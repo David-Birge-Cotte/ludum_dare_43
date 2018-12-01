@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0.3,0]")]
+	[GeneratedInterpol("{\"inter\":[0.15]")]
 	public partial class PickableItemNetworkObject : NetworkObject
 	{
 		public const int IDENTITY = 2;
@@ -17,7 +17,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		#pragma warning restore 0067
 		private Vector3 _position;
 		public event FieldEvent<Vector3> positionChanged;
-		public InterpolateVector3 positionInterpolation = new InterpolateVector3() { LerpT = 0.3f, Enabled = true };
+		public InterpolateVector3 positionInterpolation = new InterpolateVector3() { LerpT = 0.15f, Enabled = true };
 		public Vector3 position
 		{
 			get { return _position; }
@@ -45,36 +45,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (positionChanged != null) positionChanged(_position, timestep);
 			if (fieldAltered != null) fieldAltered("position", _position, timestep);
 		}
-		private Vector3 _velocity;
-		public event FieldEvent<Vector3> velocityChanged;
-		public InterpolateVector3 velocityInterpolation = new InterpolateVector3() { LerpT = 0f, Enabled = false };
-		public Vector3 velocity
-		{
-			get { return _velocity; }
-			set
-			{
-				// Don't do anything if the value is the same
-				if (_velocity == value)
-					return;
-
-				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x2;
-				_velocity = value;
-				hasDirtyFields = true;
-			}
-		}
-
-		public void SetvelocityDirty()
-		{
-			_dirtyFields[0] |= 0x2;
-			hasDirtyFields = true;
-		}
-
-		private void RunChange_velocity(ulong timestep)
-		{
-			if (velocityChanged != null) velocityChanged(_velocity, timestep);
-			if (fieldAltered != null) fieldAltered("velocity", _velocity, timestep);
-		}
 
 		protected override void OwnershipChanged()
 		{
@@ -85,7 +55,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		public void SnapInterpolations()
 		{
 			positionInterpolation.current = positionInterpolation.target;
-			velocityInterpolation.current = velocityInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
@@ -93,7 +62,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		protected override BMSByte WritePayload(BMSByte data)
 		{
 			UnityObjectMapper.Instance.MapBytes(data, _position);
-			UnityObjectMapper.Instance.MapBytes(data, _velocity);
 
 			return data;
 		}
@@ -104,10 +72,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			positionInterpolation.current = _position;
 			positionInterpolation.target = _position;
 			RunChange_position(timestep);
-			_velocity = UnityObjectMapper.Instance.Map<Vector3>(payload);
-			velocityInterpolation.current = _velocity;
-			velocityInterpolation.target = _velocity;
-			RunChange_velocity(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -117,8 +81,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			if ((0x1 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _position);
-			if ((0x2 & _dirtyFields[0]) != 0)
-				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _velocity);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -148,19 +110,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_position(timestep);
 				}
 			}
-			if ((0x2 & readDirtyFlags[0]) != 0)
-			{
-				if (velocityInterpolation.Enabled)
-				{
-					velocityInterpolation.target = UnityObjectMapper.Instance.Map<Vector3>(data);
-					velocityInterpolation.Timestep = timestep;
-				}
-				else
-				{
-					_velocity = UnityObjectMapper.Instance.Map<Vector3>(data);
-					RunChange_velocity(timestep);
-				}
-			}
 		}
 
 		public override void InterpolateUpdate()
@@ -172,11 +121,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				_position = (Vector3)positionInterpolation.Interpolate();
 				//RunChange_position(positionInterpolation.Timestep);
-			}
-			if (velocityInterpolation.Enabled && !velocityInterpolation.current.UnityNear(velocityInterpolation.target, 0.0015f))
-			{
-				_velocity = (Vector3)velocityInterpolation.Interpolate();
-				//RunChange_velocity(velocityInterpolation.Timestep);
 			}
 		}
 
