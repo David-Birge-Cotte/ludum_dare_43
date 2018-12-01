@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[]")]
-	[GeneratedRPCVariableNames("{\"types\":[]")]
+	[GeneratedRPC("{\"types\":[[\"Vector2\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"direction\"]]")]
 	public abstract partial class PickableItemBehavior : NetworkBehavior
 	{
+		public const byte RPC_PUSH = 0 + 5;
 		
 		public PickableItemNetworkObject networkObject = null;
 
@@ -21,6 +22,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
+			networkObject.RegisterRpc("Push", Push, typeof(Vector2));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -97,6 +99,11 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.SnapInterpolations();
 		}
 
+		/// <summary>
+		/// Arguments:
+		/// Vector2 direction
+		/// </summary>
+		public abstract void Push(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

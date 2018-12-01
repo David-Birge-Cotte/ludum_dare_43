@@ -130,6 +130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   Name: 
+  AccessibleItem: {fileID: 0}
 --- !u!212 &212928695818124936
 SpriteRenderer:
   m_ObjectHideFlags: 1

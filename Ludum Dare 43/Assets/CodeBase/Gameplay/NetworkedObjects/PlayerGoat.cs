@@ -8,9 +8,14 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerGoat : PlayerGoatBehavior 
 {
+	// ------------------------------------------------------------------------
+	// Variables
 	public float speed = 5.0f;
 	public string Name;
 	private Rigidbody2D rb2d;
+
+	public PickableItem AccessibleItem = null;
+	// ------------------------------------------------------------------------
 
 	protected override void NetworkStart()
 	{
@@ -19,18 +24,17 @@ public class PlayerGoat : PlayerGoatBehavior
 		// The server will destroy the network object when the owner disconnects
         if (networkObject.IsServer)
             networkObject.Owner.disconnected += delegate { DestroyPlayer(); };
-
-		// If we are not the owning client, no need to simulate physics
+	
 		if (!networkObject.IsOwner)
 		{
-			Destroy(GetComponent<Rigidbody>());
+			Destroy(GetComponent<Rigidbody2D>());
 			return;
 		}
+		rb2d = GetComponent<Rigidbody2D>();
 
 		// Ask the server to call a function on all clients 
 		// Buffered means the server will even call it on new players when connecting
 		networkObject.SendRpc(RPC_CHANGE_NAME, Receivers.AllBuffered, Name);
-		rb2d = GetComponent<Rigidbody2D>();
 	}
 
 	private void Update()
@@ -48,6 +52,7 @@ public class PlayerGoat : PlayerGoatBehavior
 
 		// Do some gameplay
 		Move();
+		Push();
 
 		// Update the network object
         networkObject.position = transform.position;
@@ -61,7 +66,18 @@ public class PlayerGoat : PlayerGoatBehavior
 		);
 
 		dir *= Time.deltaTime * speed;
+		networkObject.direction = (Vector2)dir;
 		rb2d.MovePosition(transform.position + dir);
+	}
+
+	private void Push()
+	{
+		if (AccessibleItem != null && Input.GetKeyDown(KeyCode.Space))
+		{
+			Debug.Log("Push on client");
+			Vector2 dir = (AccessibleItem.transform.position - transform.position).normalized;
+			AccessibleItem.networkObject.SendRpc(PickableItem.RPC_PUSH, Receivers.All, dir);
+		}
 	}
 
 	// Clean network destroy
@@ -75,4 +91,25 @@ public class PlayerGoat : PlayerGoatBehavior
 	{
 		Name = args.GetNext<string>();
 	}
+
+	// ------------------------------------------------------------------------
+	// TRIGGERS
+	private void OnTriggerEnter2D(Collider2D other)
+	{
+		if (!networkObject.IsOwner)
+			return;
+
+		if (other.GetComponent<PickableItem>())
+			AccessibleItem = other.GetComponent<PickableItem>();
+	}
+
+	private void OnTriggerExit2D(Collider2D other)
+	{
+		if(!networkObject.IsOwner)
+			return;
+
+		if(other.GetComponent<PickableItem>() == AccessibleItem)
+			AccessibleItem = null;
+	}
+	// ------------------------------------------------------------------------
 }

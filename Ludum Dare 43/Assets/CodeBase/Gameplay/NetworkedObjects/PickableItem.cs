@@ -13,13 +13,12 @@ public class PickableItem : PickableItemBehavior
 	protected override void NetworkStart()
 	{
 		base.NetworkStart();
-
-		rb2d = GetComponent<Rigidbody2D>();
-		if (!networkObject.IsOwner)
+		if(!networkObject.IsOwner)
 		{
-			Destroy(GetComponent<Rigidbody>());
+			Destroy(GetComponent<Rigidbody2D>());
 			return;
 		}
+		rb2d = GetComponent<Rigidbody2D>();
 	}
 
 	void Update () 
@@ -29,10 +28,34 @@ public class PickableItem : PickableItemBehavior
 
         if (!networkObject.IsOwner)
         {
+			rb2d.velocity = networkObject.velocity;
             transform.position = networkObject.position;
             return;
         }
 
+		networkObject.velocity = rb2d.velocity;
         networkObject.position = transform.position;
+	}
+
+	public override void Push(RpcArgs args)
+	{
+		if (!networkObject.IsOwner)
+			return;
+
+		Debug.Log("PUSH RPC");
+		Vector2 dir = args.GetNext<Vector2>();
+		StartCoroutine(Move((Vector2)transform.position + dir));
+	}
+
+	public IEnumerator Move(Vector3 newPos)
+	{
+		float t = 0;
+		while (t < 1)
+		{
+			rb2d.MovePosition(Vector2.Lerp(transform.position, newPos, t));
+			t += Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
+		yield return null;
 	}
 }

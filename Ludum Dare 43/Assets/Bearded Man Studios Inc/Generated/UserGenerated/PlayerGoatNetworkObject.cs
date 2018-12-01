@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0.5]")]
+	[GeneratedInterpol("{\"inter\":[0.5,0.15]")]
 	public partial class PlayerGoatNetworkObject : NetworkObject
 	{
 		public const int IDENTITY = 3;
@@ -45,6 +45,36 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (positionChanged != null) positionChanged(_position, timestep);
 			if (fieldAltered != null) fieldAltered("position", _position, timestep);
 		}
+		private Vector2 _direction;
+		public event FieldEvent<Vector2> directionChanged;
+		public InterpolateVector2 directionInterpolation = new InterpolateVector2() { LerpT = 0.15f, Enabled = true };
+		public Vector2 direction
+		{
+			get { return _direction; }
+			set
+			{
+				// Don't do anything if the value is the same
+				if (_direction == value)
+					return;
+
+				// Mark the field as dirty for the network to transmit
+				_dirtyFields[0] |= 0x2;
+				_direction = value;
+				hasDirtyFields = true;
+			}
+		}
+
+		public void SetdirectionDirty()
+		{
+			_dirtyFields[0] |= 0x2;
+			hasDirtyFields = true;
+		}
+
+		private void RunChange_direction(ulong timestep)
+		{
+			if (directionChanged != null) directionChanged(_direction, timestep);
+			if (fieldAltered != null) fieldAltered("direction", _direction, timestep);
+		}
 
 		protected override void OwnershipChanged()
 		{
@@ -55,6 +85,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		public void SnapInterpolations()
 		{
 			positionInterpolation.current = positionInterpolation.target;
+			directionInterpolation.current = directionInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
@@ -62,6 +93,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		protected override BMSByte WritePayload(BMSByte data)
 		{
 			UnityObjectMapper.Instance.MapBytes(data, _position);
+			UnityObjectMapper.Instance.MapBytes(data, _direction);
 
 			return data;
 		}
@@ -72,6 +104,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			positionInterpolation.current = _position;
 			positionInterpolation.target = _position;
 			RunChange_position(timestep);
+			_direction = UnityObjectMapper.Instance.Map<Vector2>(payload);
+			directionInterpolation.current = _direction;
+			directionInterpolation.target = _direction;
+			RunChange_direction(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -81,6 +117,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			if ((0x1 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _position);
+			if ((0x2 & _dirtyFields[0]) != 0)
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _direction);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -110,6 +148,19 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_position(timestep);
 				}
 			}
+			if ((0x2 & readDirtyFlags[0]) != 0)
+			{
+				if (directionInterpolation.Enabled)
+				{
+					directionInterpolation.target = UnityObjectMapper.Instance.Map<Vector2>(data);
+					directionInterpolation.Timestep = timestep;
+				}
+				else
+				{
+					_direction = UnityObjectMapper.Instance.Map<Vector2>(data);
+					RunChange_direction(timestep);
+				}
+			}
 		}
 
 		public override void InterpolateUpdate()
@@ -121,6 +172,11 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				_position = (Vector3)positionInterpolation.Interpolate();
 				//RunChange_position(positionInterpolation.Timestep);
+			}
+			if (directionInterpolation.Enabled && !directionInterpolation.current.UnityNear(directionInterpolation.target, 0.0015f))
+			{
+				_direction = (Vector2)directionInterpolation.Interpolate();
+				//RunChange_direction(directionInterpolation.Timestep);
 			}
 		}
 

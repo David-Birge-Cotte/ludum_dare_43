@@ -8,9 +8,12 @@ using UnityEngine;
 
 public class GameLogic : GameLogicBehavior 
 {
+	// ------------------------------------------------------------------------
+	// Variables
 	public static GameLogic Instance;
 	public Vector3 StartPos = new Vector3();
 	public Transform PlayerTransform;
+	// ------------------------------------------------------------------------
 
 	private void Awake()
 	{
@@ -29,14 +32,8 @@ public class GameLogic : GameLogicBehavior
 
 		for (int i = 0; i < 5; i++)
 		{
-			var item = NetworkManager.Instance.InstantiatePickableItem();
-			item.transform.position = new Vector3(Random.Range(-10, 0), Random.Range(-10, 0));
-			item.networkObject.position = item.transform.position;
+			var item = NetworkManager.Instance.InstantiatePickableItem(
+				position:new Vector3(Random.Range(-10, 10), Random.Range(-8, -2)));
 		}
-	}
-
-	public override void SpawnItem(RpcArgs args)
-	{
-		// not needed in fact
 	}
 }
