@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0.15,0]")]
+	[GeneratedInterpol("{\"inter\":[0.15]")]
 	public partial class PlayerGoatNetworkObject : NetworkObject
 	{
-		public const int IDENTITY = 6;
+		public const int IDENTITY = 2;
 
 		private byte[] _dirtyFields = new byte[1];
 
@@ -45,36 +45,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (positionChanged != null) positionChanged(_position, timestep);
 			if (fieldAltered != null) fieldAltered("position", _position, timestep);
 		}
-		private byte _playerid;
-		public event FieldEvent<byte> playeridChanged;
-		public Interpolated<byte> playeridInterpolation = new Interpolated<byte>() { LerpT = 0f, Enabled = false };
-		public byte playerid
-		{
-			get { return _playerid; }
-			set
-			{
-				// Don't do anything if the value is the same
-				if (_playerid == value)
-					return;
-
-				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x2;
-				_playerid = value;
-				hasDirtyFields = true;
-			}
-		}
-
-		public void SetplayeridDirty()
-		{
-			_dirtyFields[0] |= 0x2;
-			hasDirtyFields = true;
-		}
-
-		private void RunChange_playerid(ulong timestep)
-		{
-			if (playeridChanged != null) playeridChanged(_playerid, timestep);
-			if (fieldAltered != null) fieldAltered("playerid", _playerid, timestep);
-		}
 
 		protected override void OwnershipChanged()
 		{
@@ -85,7 +55,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		public void SnapInterpolations()
 		{
 			positionInterpolation.current = positionInterpolation.target;
-			playeridInterpolation.current = playeridInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
@@ -93,7 +62,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		protected override BMSByte WritePayload(BMSByte data)
 		{
 			UnityObjectMapper.Instance.MapBytes(data, _position);
-			UnityObjectMapper.Instance.MapBytes(data, _playerid);
 
 			return data;
 		}
@@ -104,10 +72,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			positionInterpolation.current = _position;
 			positionInterpolation.target = _position;
 			RunChange_position(timestep);
-			_playerid = UnityObjectMapper.Instance.Map<byte>(payload);
-			playeridInterpolation.current = _playerid;
-			playeridInterpolation.target = _playerid;
-			RunChange_playerid(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -117,8 +81,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			if ((0x1 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _position);
-			if ((0x2 & _dirtyFields[0]) != 0)
-				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _playerid);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -148,19 +110,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_position(timestep);
 				}
 			}
-			if ((0x2 & readDirtyFlags[0]) != 0)
-			{
-				if (playeridInterpolation.Enabled)
-				{
-					playeridInterpolation.target = UnityObjectMapper.Instance.Map<byte>(data);
-					playeridInterpolation.Timestep = timestep;
-				}
-				else
-				{
-					_playerid = UnityObjectMapper.Instance.Map<byte>(data);
-					RunChange_playerid(timestep);
-				}
-			}
 		}
 
 		public override void InterpolateUpdate()
@@ -172,11 +121,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				_position = (Vector3)positionInterpolation.Interpolate();
 				//RunChange_position(positionInterpolation.Timestep);
-			}
-			if (playeridInterpolation.Enabled && !playeridInterpolation.current.UnityNear(playeridInterpolation.target, 0.0015f))
-			{
-				_playerid = (byte)playeridInterpolation.Interpolate();
-				//RunChange_playerid(playeridInterpolation.Timestep);
 			}
 		}
 

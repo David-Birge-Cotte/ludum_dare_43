@@ -7,12 +7,15 @@ using UnityEngine;
 
 public class GameLogic : GameLogicBehavior 
 {
+	public static GameLogic Instance;
 	public Vector3 StartPos = new Vector3();
+	public Transform PlayerTransform;
 
-	private void Start()
+	private void Awake()
 	{
-		// This will be called on every client, so each client will essentially instantiate
-        // their own player on the network. We also pass in the position we want them to spawn at
-        NetworkManager.Instance.InstantiatePlayerGoat(position:StartPos);
+		Instance = this;
+
+        var player = NetworkManager.Instance.InstantiatePlayerGoat(position:StartPos);
+		PlayerTransform = player.transform;
 	}
 }
