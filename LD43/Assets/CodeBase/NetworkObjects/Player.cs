@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking;
 using UnityEngine;
+using TMPro;
 
 public class Player : PlayerBehavior 
 {
@@ -21,6 +22,7 @@ public class Player : PlayerBehavior
 	void Start()
 	{
 		rb2d = GetComponent<Rigidbody2D>();
+		GameObject.Find("player Name").GetComponent<TMP_Text>().text = PlayerPrefs.GetString("Name", "Bob");
 	}
 
 	protected override void NetworkStart()
