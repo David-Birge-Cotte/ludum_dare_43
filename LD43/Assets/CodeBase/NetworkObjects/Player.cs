@@ -18,14 +18,7 @@ public class Player : PlayerBehavior
 	void Start()
 	{
 		rb2d = GetComponent<Rigidbody2D>();
-		if (!networkObject.IsOwner)
-		{
-			rb2d.simulated = false;
-			return;
-		}
-		BMSLogger.DebugLog("START OF PLAYER");
 	}
-
 
 	protected override void NetworkStart()
 	{

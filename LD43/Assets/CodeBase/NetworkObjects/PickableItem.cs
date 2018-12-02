@@ -8,6 +8,13 @@ using UnityEngine;
 public class PickableItem : PickableItemBehavior 
 {
 	public uint lastPlayerIDTouched = 0;
+	private Rigidbody2D rb2d;
+
+	void Start()
+	{
+		rb2d = GetComponent<Rigidbody2D>();
+	}
+
 	protected override void NetworkStart()
 	{
 		base.NetworkStart();
@@ -21,8 +28,10 @@ public class PickableItem : PickableItemBehavior
         if (!networkObject.IsOwner)
         {
             transform.position = networkObject.position;
+			rb2d.velocity = networkObject.velocity;
             return;
         }
+		networkObject.velocity = rb2d.velocity;
         networkObject.position = transform.position;
 	}
 
@@ -35,7 +44,8 @@ public class PickableItem : PickableItemBehavior
 			return;
 
 		BMSLogger.DebugLog("-- push rpc by " + lastPlayerIDTouched + " --");
-		StartCoroutine(Move((Vector2)transform.position + dir));
+		rb2d.AddForce(dir * 10, ForceMode2D.Impulse);
+		//StartCoroutine(Move((Vector2)transform.position + dir));
 	}
 
 	public IEnumerator Move(Vector3 newPos)
