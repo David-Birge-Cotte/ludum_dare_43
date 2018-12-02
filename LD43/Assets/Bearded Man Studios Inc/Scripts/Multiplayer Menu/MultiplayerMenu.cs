@@ -161,11 +161,12 @@ public class MultiplayerMenu : MonoBehaviour
 
 	private void Update()
 	{
+		/*
 		if (Input.GetKeyDown(KeyCode.H))
 			Host();
 		else if (Input.GetKeyDown(KeyCode.C))
-			Connect();
-		else if (Input.GetKeyDown(KeyCode.L))
+			Connect(); */
+		if (Input.GetKeyDown(KeyCode.L))
 		{
 			NetWorker.localServerLocated -= TestLocalServerFind;
 			NetWorker.localServerLocated += TestLocalServerFind;
@@ -241,5 +242,10 @@ public class MultiplayerMenu : MonoBehaviour
 			NetWorker.EndSession();
 
 		if (server != null) server.Disconnect(true);
+	}
+
+	public void Quit()
+	{
+		Application.Quit();
 	}
 }
