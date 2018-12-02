@@ -15,16 +15,13 @@ public class Player : PlayerBehavior
 	public string Name;
 	private float force = 20;
 	private Rigidbody2D rb2d;
-
 	public TMP_Text FloatingName;
-
-	public bool CanMove = false;
+	public bool CanMove = true;
 	// ------------------------------------------------------------------------
 
 	void Start()
 	{
 		rb2d = GetComponent<Rigidbody2D>();
-		
 	}
 
 	protected override void NetworkStart()
@@ -38,7 +35,10 @@ public class Player : PlayerBehavior
 		// Ask the server to call a function on all clients 
 		// Buffered means the server will even call it on new players when connecting
 		if (networkObject.IsOwner)
+		{
+			Name = PlayerPrefs.GetString("Name", "bob");
 			networkObject.SendRpc(RPC_CHANGE_NAME, Receivers.AllBuffered, Name);
+		}
 	}
 
 	private void Update()
@@ -92,13 +92,13 @@ public class Player : PlayerBehavior
 	{
 		Name = newName;
 		networkObject.SendRpc(RPC_CHANGE_NAME, Receivers.AllBuffered, Name);
-		FloatingName.text = Name;
 	}
 
 	// A RPC is called by the server on all clients
 	public override void ChangeName(RpcArgs args)
 	{
 		Name = args.GetNext<string>();
+		FloatingName.text = Name;
 	}
 
 	public override void AddScore(RpcArgs args)
