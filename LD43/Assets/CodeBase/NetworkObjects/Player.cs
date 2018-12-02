@@ -14,6 +14,8 @@ public class Player : PlayerBehavior
 	public string Name;
 	private float force = 20;
 	private Rigidbody2D rb2d;
+
+	public bool CanMove = false;
 	// ------------------------------------------------------------------------
 
 	void Start()
@@ -31,7 +33,8 @@ public class Player : PlayerBehavior
 
 		// Ask the server to call a function on all clients 
 		// Buffered means the server will even call it on new players when connecting
-		networkObject.SendRpc(RPC_CHANGE_NAME, Receivers.AllBuffered, Name);
+		if (networkObject.IsOwner)
+			networkObject.SendRpc(RPC_CHANGE_NAME, Receivers.AllBuffered, Name);
 	}
 
 	private void Update()
@@ -40,7 +43,6 @@ public class Player : PlayerBehavior
 		if (networkObject == null)
 			return;
 
-		Score = networkObject.score;
 		// If not owner, update position based on network informations
         if (!networkObject.IsOwner)
         {
@@ -49,7 +51,8 @@ public class Player : PlayerBehavior
         }
 
 		// Do some gameplay
-		Move();
+		if(CanMove)
+			Move();
 
 		// Update the network object
         networkObject.position = transform.position;
@@ -81,10 +84,22 @@ public class Player : PlayerBehavior
 		networkObject.Destroy();
 	}
 
+	public void ChangeNameRPCCall(string newName)
+	{
+		Name = newName;
+		networkObject.SendRpc(RPC_CHANGE_NAME, Receivers.AllBuffered, Name);
+	}
+
 	// A RPC is called by the server on all clients
 	public override void ChangeName(RpcArgs args)
 	{
 		Name = args.GetNext<string>();
+	}
+
+	public override void AddScore(RpcArgs args)
+	{
+		int score = args.GetNext<int>();
+		Score += score;
 	}
 
 	// ------------------------------------------------------------------------

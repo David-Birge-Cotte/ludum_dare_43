@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0.15,0]")]
+	[GeneratedInterpol("{\"inter\":[0.15]")]
 	public partial class PlayerNetworkObject : NetworkObject
 	{
 		public const int IDENTITY = 7;
@@ -45,36 +45,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (positionChanged != null) positionChanged(_position, timestep);
 			if (fieldAltered != null) fieldAltered("position", _position, timestep);
 		}
-		private int _score;
-		public event FieldEvent<int> scoreChanged;
-		public Interpolated<int> scoreInterpolation = new Interpolated<int>() { LerpT = 0f, Enabled = false };
-		public int score
-		{
-			get { return _score; }
-			set
-			{
-				// Don't do anything if the value is the same
-				if (_score == value)
-					return;
-
-				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x2;
-				_score = value;
-				hasDirtyFields = true;
-			}
-		}
-
-		public void SetscoreDirty()
-		{
-			_dirtyFields[0] |= 0x2;
-			hasDirtyFields = true;
-		}
-
-		private void RunChange_score(ulong timestep)
-		{
-			if (scoreChanged != null) scoreChanged(_score, timestep);
-			if (fieldAltered != null) fieldAltered("score", _score, timestep);
-		}
 
 		protected override void OwnershipChanged()
 		{
@@ -85,7 +55,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		public void SnapInterpolations()
 		{
 			positionInterpolation.current = positionInterpolation.target;
-			scoreInterpolation.current = scoreInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
@@ -93,7 +62,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		protected override BMSByte WritePayload(BMSByte data)
 		{
 			UnityObjectMapper.Instance.MapBytes(data, _position);
-			UnityObjectMapper.Instance.MapBytes(data, _score);
 
 			return data;
 		}
@@ -104,10 +72,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			positionInterpolation.current = _position;
 			positionInterpolation.target = _position;
 			RunChange_position(timestep);
-			_score = UnityObjectMapper.Instance.Map<int>(payload);
-			scoreInterpolation.current = _score;
-			scoreInterpolation.target = _score;
-			RunChange_score(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -117,8 +81,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			if ((0x1 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _position);
-			if ((0x2 & _dirtyFields[0]) != 0)
-				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _score);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -148,19 +110,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_position(timestep);
 				}
 			}
-			if ((0x2 & readDirtyFlags[0]) != 0)
-			{
-				if (scoreInterpolation.Enabled)
-				{
-					scoreInterpolation.target = UnityObjectMapper.Instance.Map<int>(data);
-					scoreInterpolation.Timestep = timestep;
-				}
-				else
-				{
-					_score = UnityObjectMapper.Instance.Map<int>(data);
-					RunChange_score(timestep);
-				}
-			}
 		}
 
 		public override void InterpolateUpdate()
@@ -172,11 +121,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				_position = (Vector3)positionInterpolation.Interpolate();
 				//RunChange_position(positionInterpolation.Timestep);
-			}
-			if (scoreInterpolation.Enabled && !scoreInterpolation.current.UnityNear(scoreInterpolation.target, 0.0015f))
-			{
-				_score = (int)scoreInterpolation.Interpolate();
-				//RunChange_score(scoreInterpolation.Timestep);
 			}
 		}
 

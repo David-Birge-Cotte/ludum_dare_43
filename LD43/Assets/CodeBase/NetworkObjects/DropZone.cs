@@ -11,20 +11,19 @@ public class DropZone : DropZoneBehavior
 	{
 		uint playerID = args.GetNext<uint>();
 
-		GameLogic.GetPlayerByID(playerID).networkObject.score++;
+		Player p = GameLogic.GetPlayerByID(playerID);
+		p.networkObject.SendRpc(Player.RPC_ADD_SCORE, Receivers.AllBuffered, 1);
 		BMSLogger.DebugLog("Player scored : " + playerID);
 	}
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		BMSLogger.DebugLog("Trig enter");
 		if (!networkObject.IsServer)
 			return;
 		
 		PickableItem item = other.GetComponent<PickableItem>();
 		if (item != null)
 		{
-			BMSLogger.DebugLog("before rpc");
 			networkObject.SendRpc(RPC_DROP, Receivers.Owner, item.lastPlayerIDTouched);
 			item.networkObject.Destroy();
 		}
