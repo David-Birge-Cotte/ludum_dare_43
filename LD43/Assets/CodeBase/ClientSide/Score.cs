@@ -10,20 +10,19 @@ public class Score : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		UpdateScores();
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		
+		UpdateScores();
 	}
 
 	void UpdateScores()
 	{
 		for (int i = transform.childCount; i > 0; i--)
 		{
-			Destroy(transform.GetChild(i).gameObject);
+			Destroy(transform.GetChild(i -1).gameObject);
 		}
 
 		foreach(Player p in FindObjectsOfType<Player>())
