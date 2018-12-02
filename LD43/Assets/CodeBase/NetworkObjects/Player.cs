@@ -12,6 +12,7 @@ public class Player : PlayerBehavior
 	public int Score = 0;
 	public float speed = 5.0f;
 	public string Name;
+	private float force = 20;
 	private Rigidbody2D rb2d;
 	// ------------------------------------------------------------------------
 
@@ -67,7 +68,7 @@ public class Player : PlayerBehavior
 
 	private void Push(PickableItem item)
 	{
-		Vector2 dir = (item.transform.position - transform.position).normalized * 3;
+		Vector2 dir = (item.transform.position - transform.position).normalized * force;
 
 		object[] rpcParams = new object[2] {(object)networkObject.NetworkId, (object)dir};
 

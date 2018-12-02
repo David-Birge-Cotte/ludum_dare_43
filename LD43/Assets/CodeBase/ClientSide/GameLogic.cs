@@ -36,4 +36,10 @@ public class GameLogic : MonoBehaviour
 		}
 		return null;
 	}
+
+	public void Quit()
+	{
+		//NetworkManager.Instance.Networker.Disconnect(true);
+		Application.Quit(); // will do everything
+	}
 }

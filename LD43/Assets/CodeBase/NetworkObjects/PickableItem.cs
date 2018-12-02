@@ -44,19 +44,6 @@ public class PickableItem : PickableItemBehavior
 			return;
 
 		BMSLogger.DebugLog("-- push rpc by " + lastPlayerIDTouched + " --");
-		rb2d.AddForce(dir * 10, ForceMode2D.Impulse);
-		//StartCoroutine(Move((Vector2)transform.position + dir));
-	}
-
-	public IEnumerator Move(Vector3 newPos)
-	{
-		float t = 0;
-		while (t < 1)
-		{
-			transform.position = Vector2.Lerp(transform.position, newPos, t);
-			t += Time.deltaTime;
-			yield return new WaitForEndOfFrame();
-		}
-		yield return null;
+		rb2d.AddForce(dir, ForceMode2D.Impulse);
 	}
 }

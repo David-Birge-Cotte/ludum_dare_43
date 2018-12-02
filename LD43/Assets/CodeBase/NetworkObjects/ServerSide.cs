@@ -9,7 +9,7 @@ using UnityEngine;
 public class ServerSide : ServerSideBehavior 
 {
 	public static ServerSide Instance;
-
+	private int maxItems = 10;
 	protected override void NetworkStart()
 	{
 		base.NetworkStart();
@@ -19,17 +19,20 @@ public class ServerSide : ServerSideBehavior
 		else
 		{
 			Instance = this;
-			SpawnItems();
+			InvokeRepeating("CheckAndRespawnItems", 0, 10);
 		}
-	} 
+	}
 
-	void SpawnItems()
+	void CheckAndRespawnItems()
 	{
-		BMSLogger.DebugLog("Spawning items");
-		for (int i = 0; i < 5; i++)
+		int itemNb = GameObject.FindObjectsOfType<PickableItem>().Length;
+		int newItemNb = maxItems - itemNb;
+
+		for (int i = 0; i < newItemNb; i++)
 		{
+			BMSLogger.DebugLog("Spawning 1 item");
 			var item = NetworkManager.Instance.InstantiatePickableItem(
-				position:new Vector3(Random.Range(-10, 10), Random.Range(-8, -2)));
+				position:new Vector3(Random.Range(-10, 10), Random.Range(-20, -5)));
 		}
-	} 
+	}
 }
