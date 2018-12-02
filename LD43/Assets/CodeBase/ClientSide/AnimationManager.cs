@@ -2,19 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Sprite))]
 public class AnimationManager : MonoBehaviour 
 {
 	public Sprite Right, Left, Top, Down;
 
 	private Vector2 dir, prevPos;
-	private SpriteRenderer sr;
-
-	// Use this for initialization
-	void Start () 
-	{
-		sr = GetComponent<SpriteRenderer>();
-	}
+	public SpriteRenderer sr;
+	public Animator animator;
 	
 	// Update is called once per frame
 	void Update () 
@@ -22,6 +16,7 @@ public class AnimationManager : MonoBehaviour
 		Vector2 pos = new Vector2(transform.position.x, transform.position.y) ;
 		dir = pos - prevPos;
 		DisplayCorrectSprite();
+		animator.SetFloat("Speed", Vector2.Distance(prevPos, pos));
 		prevPos = pos;
 	}
 
