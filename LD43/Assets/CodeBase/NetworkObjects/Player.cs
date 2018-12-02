@@ -16,7 +16,7 @@ public class Player : PlayerBehavior
 	private float force = 20;
 	private Rigidbody2D rb2d;
 	public TMP_Text FloatingName;
-	public bool CanMove = true;
+	[HideInInspector] public bool CanMove = true;
 	// ------------------------------------------------------------------------
 
 	void Start()
