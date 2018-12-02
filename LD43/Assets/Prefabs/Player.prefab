@@ -38,6 +38,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4936351929914028}
   - component: {fileID: 212704351308372958}
+  - component: {fileID: 114758863190276316}
   m_Layer: 0
   m_Name: New Sprite
   m_TagString: Untagged
@@ -131,6 +132,22 @@ MonoBehaviour:
   Score: 0
   speed: 5
   Name: default_name
+  CanMove: 0
+--- !u!114 &114758863190276316
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1670122894389812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d755ed63cca614843aedb6c89c046098, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Right: {fileID: 21300000, guid: 81fed14b7dc85af42b2bf6dabce0ddd6, type: 3}
+  Left: {fileID: 21300000, guid: 7877a3442948f6e46b0960a12f2adc24, type: 3}
+  Top: {fileID: 21300000, guid: b1a3295cccb58c142bf4ad665c71a776, type: 3}
+  Down: {fileID: 21300000, guid: 3f7cf9aaaf0efdd4fa93835bc8da3dfe, type: 3}
 --- !u!212 &212704351308372958
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -166,7 +183,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a38c78d3550b343758d760e173fc421c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 81fed14b7dc85af42b2bf6dabce0ddd6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
