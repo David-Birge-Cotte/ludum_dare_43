@@ -16,13 +16,15 @@ public class Player : PlayerBehavior
 	private float force = 20;
 	private Rigidbody2D rb2d;
 
+	public TMP_Text FloatingName;
+
 	public bool CanMove = false;
 	// ------------------------------------------------------------------------
 
 	void Start()
 	{
 		rb2d = GetComponent<Rigidbody2D>();
-		GameObject.Find("player Name").GetComponent<TMP_Text>().text = PlayerPrefs.GetString("Name", "Bob");
+		
 	}
 
 	protected override void NetworkStart()
@@ -90,6 +92,7 @@ public class Player : PlayerBehavior
 	{
 		Name = newName;
 		networkObject.SendRpc(RPC_CHANGE_NAME, Receivers.AllBuffered, Name);
+		FloatingName.text = Name;
 	}
 
 	// A RPC is called by the server on all clients

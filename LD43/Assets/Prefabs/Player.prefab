@@ -302,6 +302,7 @@ MonoBehaviour:
   Score: 0
   speed: 5
   Name: default_name
+  FloatingName: {fileID: 114393021231914836}
   CanMove: 0
 --- !u!114 &114755066844856454
 MonoBehaviour:
