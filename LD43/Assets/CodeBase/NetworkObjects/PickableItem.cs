@@ -28,11 +28,13 @@ public class PickableItem : PickableItemBehavior
 
 	public override void Push(RpcArgs args)
 	{
-		Debug.Log("PUSH RPC");
-
 		lastPlayerIDTouched = args.GetNext<uint>();
 		Vector2 dir = args.GetNext<Vector2>();
 
+		if (lastPlayerIDTouched == 0)
+			return;
+
+		BMSLogger.DebugLog("-- push rpc by " + lastPlayerIDTouched + " --");
 		StartCoroutine(Move((Vector2)transform.position + dir));
 	}
 

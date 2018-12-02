@@ -9,12 +9,23 @@ public class Player : PlayerBehavior
 {
 	// ------------------------------------------------------------------------
 	// Variables
-	public uint PlayerID = 0;
 	public int Score = 0;
 	public float speed = 5.0f;
 	public string Name;
 	private Rigidbody2D rb2d;
 	// ------------------------------------------------------------------------
+
+	void Start()
+	{
+		rb2d = GetComponent<Rigidbody2D>();
+		if (!networkObject.IsOwner)
+		{
+			rb2d.simulated = false;
+			return;
+		}
+		BMSLogger.DebugLog("START OF PLAYER");
+	}
+
 
 	protected override void NetworkStart()
 	{
@@ -23,15 +34,6 @@ public class Player : PlayerBehavior
 		// The server will destroy the network object when the owner disconnects
         if (networkObject.IsServer)
             networkObject.Owner.disconnected += delegate { DestroyPlayer(); };
-
-		rb2d = GetComponent<Rigidbody2D>();
-		if (!networkObject.IsOwner)
-		{
-			rb2d.simulated = false;
-			return;
-		}
-
-		BMSLogger.DebugLog("START OF PLAYER");
 
 		// Ask the server to call a function on all clients 
 		// Buffered means the server will even call it on new players when connecting
@@ -44,11 +46,11 @@ public class Player : PlayerBehavior
 		if (networkObject == null)
 			return;
 
+		Score = networkObject.score;
 		// If not owner, update position based on network informations
         if (!networkObject.IsOwner)
         {
             transform.position = networkObject.position;
-			//Score = networkObject.score; //dont update the score since its "SacrificeZone's job
             return;
         }
 
@@ -74,7 +76,7 @@ public class Player : PlayerBehavior
 	{
 		Vector2 dir = (item.transform.position - transform.position).normalized * 3;
 
-		object[] rpcParams = new object[2] {(object)PlayerID, (object)dir};
+		object[] rpcParams = new object[2] {(object)networkObject.NetworkId, (object)dir};
 
 		item.networkObject.SendRpc(PickableItem.RPC_PUSH, Receivers.Owner, rpcParams);
 	}

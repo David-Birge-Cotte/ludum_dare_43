@@ -15,24 +15,25 @@ public class GameLogic : MonoBehaviour
 	public Transform PlayerTransform;
 	// ------------------------------------------------------------------------
 
-	private void Awake()
+	private void Start()
 	{
 		Instance = this;
 
         var player = NetworkManager.Instance.InstantiatePlayer(position:StartPos);
 		PlayerTransform = player.transform;
-		player.GetComponent<Player>().PlayerID = player.networkObject.NetworkId;
 
 		BMSLogger.DebugLog("Player " + player.networkObject.NetworkId + " joined the game");
 	}
 
-	void Start()
+	public static Player GetPlayerByID(uint id)
 	{
-		BMSLogger.DebugLog("Spawning items");
-		for (int i = 0; i < 5; i++)
+		Player[] pls = GameObject.FindObjectsOfType<Player>();
+
+		foreach (var p in pls)
 		{
-			var item = NetworkManager.Instance.InstantiatePickableItem(
-				position:new Vector3(Random.Range(-10, 10), Random.Range(-8, -2)));
+			if(p.networkObject.NetworkId == id)
+				return p;
 		}
+		return null;
 	}
 }
