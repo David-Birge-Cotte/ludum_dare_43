@@ -32,7 +32,26 @@ public class ServerSide : ServerSideBehavior
 		{
 			BMSLogger.DebugLog("Spawning 1 item");
 			var item = NetworkManager.Instance.InstantiatePickableItem(
-				position:new Vector3(Random.Range(-10, 10), Random.Range(-20, -5)));
+				position: generateRd(15, 15, 3, 3, new Vector3(0.06f, 3.41f)));
+				//position:new Vector3(Random.Range(-10, 10), Random.Range(-20, -5)));
 		}
+	}
+
+	Vector3  generateRd(float maxX, float maxY, float minX, float minY, Vector3 Pivot)
+	{
+		float x = Random.Range(minX, maxX);
+		float y = Random.Range(minY, maxY);
+
+		if (Random.Range(0, 1.0f) > 0.5f)
+		{
+			x = -x;
+		}
+
+		if (Random.Range(0, 1.0f) > 0.5f)
+		{
+			y = -y;
+		}
+
+		return new Vector3(x, y) + Pivot;
 	}
 }
